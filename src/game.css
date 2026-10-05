@@ -1,0 +1,508 @@
+.gamePage {
+  width: min(100%, 1000px);
+  padding: 26px 20px 36px;
+  isolation: isolate;
+}
+
+.gamePage::before {
+  position: fixed;
+  z-index: -1;
+  inset: 66px 0 0;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 52% 61%, #19285655, transparent 48%),
+    linear-gradient(transparent 96%, #526bb015 97%),
+    linear-gradient(90deg, transparent 96%, #526bb015 97%);
+  background-size: auto, 42px 42px, 42px 42px;
+  mask-image: linear-gradient(transparent, #000 35%, #000 88%, transparent);
+}
+
+.gameHeader {
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+}
+
+.gameHeader > div {
+  min-height: 58px;
+  border: 1px solid #9aaeff20;
+  background: linear-gradient(145deg, #111a35e8, #090e20eb);
+  box-shadow: inset 0 1px #ffffff09, 0 10px 30px #0003;
+}
+
+.gameHeader .commanderTag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.commanderTag strong {
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scoreBox strong {
+  text-shadow: 0 0 20px #8395ff66;
+}
+
+.timerBox strong small {
+  font: 600 12px 'Space Grotesk', sans-serif;
+  color: #8792b1;
+  margin-left: 2px;
+}
+
+.missionHint {
+  margin: 18px 0 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font: 600 10px Orbitron, sans-serif;
+}
+
+.missionHint b {
+  color: #647393;
+}
+
+.hintSignal {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 7px 1px 0;
+  border-radius: 50%;
+  background: #72f5da;
+  box-shadow: 0 0 11px #72f5da;
+}
+
+.spacePanel {
+  border-color: #90a5df21;
+  background: linear-gradient(150deg, #0a1022ef, #0b132bf0);
+  box-shadow: 0 24px 75px #0004, inset 0 1px #ffffff08;
+  padding: 18px;
+}
+
+.panelTitle {
+  margin-bottom: 16px;
+}
+
+.shipGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.shipCard {
+  --ship-color: #91a3ff;
+  min-width: 0;
+  min-height: 0;
+  height: 160px;
+  padding: 12px 15px 11px;
+  border: 1px solid color-mix(in srgb, var(--ship-color) 25%, transparent);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 49% 58%, color-mix(in srgb, var(--ship-color) 12%, transparent), transparent 55%),
+    linear-gradient(145deg, #151e39, #0a1020 75%);
+  box-shadow: inset 0 1px #ffffff0d, 0 8px 22px #0002;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, opacity .16s ease;
+  animation: shipIdle 3.8s ease-in-out infinite;
+}
+
+.shipCard:nth-child(even) {
+  animation-delay: -1.7s;
+}
+
+.shipCard:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--ship-color) 62%, transparent);
+  box-shadow: inset 0 1px #ffffff12, 0 9px 26px #0004, 0 0 18px color-mix(in srgb, var(--ship-color) 10%, transparent);
+}
+
+.shipCard:active {
+  cursor: grabbing;
+}
+
+.shipCard.urgent {
+  border-color: #ff777f66;
+  box-shadow: inset 0 1px #ffffff0d, 0 0 18px #ff596b12;
+}
+
+.shipCard.urgent .expiry {
+  color: #ff9297;
+}
+
+.shipCard.beingDragged {
+  opacity: .24;
+  animation: none;
+}
+
+.shipCard.returning {
+  animation: shipReturn .48s cubic-bezier(.2,.75,.2,1);
+}
+
+.shipMeta,
+.shipFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.shipCard .shipName {
+  overflow: hidden;
+  margin: 0;
+  color: color-mix(in srgb, var(--ship-color) 78%, #fff);
+  font: 700 9px Orbitron, sans-serif;
+  letter-spacing: 1px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shipCard .reward {
+  flex: none;
+  color: #e5eaff;
+  font: 700 13px Orbitron, sans-serif;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--ship-color) 50%, transparent);
+}
+
+.shipViewport {
+  height: 91px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.shipArt {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 3px 5px #0008) drop-shadow(0 0 7px color-mix(in srgb, var(--ship-color, #91a3ff) 30%, transparent));
+}
+
+.shipFlame {
+  transform-origin: 28px 50px;
+  animation: enginePulse .48s ease-in-out infinite alternate;
+}
+
+.shipClass {
+  overflow: hidden;
+  color: #627091;
+  font: 600 8px 'Space Grotesk', sans-serif;
+  letter-spacing: 1px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shipCard .expiry {
+  flex: none;
+  margin: 0;
+  color: #9aa8c5;
+  font-size: 10px;
+}
+
+.progress {
+  height: 3px;
+  background: #ffffff12;
+}
+
+.progress span,
+.dockBar span {
+  background: linear-gradient(90deg, #72f5da, #8b9bff);
+  box-shadow: 0 0 10px #72f5da88;
+  transition: width .12s linear;
+}
+
+.emptyShips {
+  color: #8190b0;
+  font-size: 12px;
+}
+
+.dockBay {
+  position: relative;
+  min-height: 225px;
+  margin-top: 14px;
+  padding: 15px 18px 12px;
+  overflow: hidden;
+  border: 1px solid #70ded344;
+  background:
+    radial-gradient(ellipse at 50% 88%, #2bd9d322, transparent 42%),
+    linear-gradient(180deg, #101b32f2, #080d1bf5);
+  box-shadow: inset 0 1px #ffffff12, 0 15px 45px #0005;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.dockBay::before,
+.dockBay::after {
+  position: absolute;
+  top: 50%;
+  width: 17%;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, #7af9e288);
+  box-shadow: 0 0 12px #72f5da77;
+}
+
+.dockBay::before { left: 0; }
+.dockBay::after { right: 0; transform: rotate(180deg); }
+
+.dockBay.dragTarget {
+  border-color: #71f3dc;
+  background:
+    radial-gradient(ellipse at 50% 80%, #35f1db44, transparent 50%),
+    linear-gradient(180deg, #142640f5, #081624f5);
+  box-shadow: inset 0 0 45px #41eedb17, 0 0 34px #42e8d733;
+}
+
+.bayStructure {
+  position: relative;
+  display: flex;
+  min-height: 194px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.bayLights {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  display: flex;
+  gap: clamp(16px, 6vw, 62px);
+  transform: translateX(-50%);
+}
+
+.bayLights i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #64e6d2;
+  box-shadow: 0 0 9px #64e6d2;
+  animation: lightBlink 1.5s ease-in-out infinite alternate;
+}
+
+.bayLights i:nth-child(even) { animation-delay: -.7s; }
+
+.bayLabel {
+  position: absolute;
+  top: 12px;
+  margin: 0;
+  color: #8ca0b7;
+  font: 700 9px Orbitron, sans-serif;
+  letter-spacing: 2px;
+}
+
+.bayPortal {
+  position: absolute;
+  top: 27px;
+  left: 50%;
+  width: clamp(130px, 29vw, 190px);
+  height: clamp(86px, 18vw, 112px);
+  overflow: hidden;
+  border: 3px solid #5ee4cf99;
+  border-bottom-color: #5ee4cf22;
+  border-radius: 100px 100px 16px 16px;
+  background: radial-gradient(ellipse at 50% 100%, #49ecdc38, #172d4822 58%, #070c19);
+  box-shadow: 0 0 15px #52efdc33, inset 0 0 25px #52efdc18;
+  transform: translateX(-50%);
+  transition: box-shadow .2s, border-color .2s;
+}
+
+.bayPortal::before {
+  position: absolute;
+  inset: 7px 8px 0;
+  content: "";
+  border: 1px solid #b4fff155;
+  border-bottom: 0;
+  border-radius: 100px 100px 0 0;
+}
+
+.portalCore {
+  position: absolute;
+  right: 15%;
+  bottom: -35%;
+  left: 15%;
+  height: 65%;
+  border-radius: 50%;
+  background: #57f4df1c;
+  filter: blur(9px);
+  animation: portalBreathe 2.8s ease-in-out infinite alternate;
+}
+
+.portalGrid {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 30%;
+  background: repeating-linear-gradient(90deg, #76e9db1c 0 1px, transparent 1px 16px);
+  transform: perspective(35px) rotateX(19deg);
+}
+
+.bayPortal.portalActive {
+  border-color: #a3fff0;
+  box-shadow: 0 0 24px #52efdc99, inset 0 0 32px #52efdc3b;
+}
+
+.bayDeck {
+  position: relative;
+  display: flex;
+  width: min(76%, 430px);
+  height: 34px;
+  justify-content: space-around;
+  align-items: center;
+  margin: 93px auto 0;
+  border: 1px solid #70dfcf44;
+  border-top: 2px solid #76f8e2bb;
+  background: linear-gradient(180deg, #43e8d522, #142638bb);
+  clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+  box-shadow: 0 -8px 25px #58f1dc19;
+}
+
+.bayDeck span {
+  width: 14px;
+  height: 2px;
+  background: #96fff077;
+  box-shadow: 0 0 7px #70f5df;
+}
+
+.dockText {
+  position: relative;
+  z-index: 1;
+  margin-top: 7px;
+  color: #95a9bf;
+  font: 700 9px Orbitron, sans-serif;
+  letter-spacing: 1.7px;
+}
+
+.bayDocking .dockText {
+  color: #75f2db;
+  text-shadow: 0 0 12px #75f2db88;
+}
+
+.dockBar {
+  position: relative;
+  z-index: 1;
+  width: min(270px, 70%);
+  height: 3px;
+  margin-top: 7px;
+  background: #ffffff12;
+}
+
+.dockShipVisual {
+  position: absolute;
+  z-index: 2;
+  top: 48px;
+  left: 50%;
+  width: min(210px, 47vw);
+  height: 74px;
+  animation: shipLand 2.4s cubic-bezier(.2,.7,.15,1) forwards;
+  transform: translateX(-50%);
+}
+
+.dragGhost {
+  position: fixed;
+  z-index: 20;
+  width: min(210px, 47vw);
+  height: 84px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 9px 18px #000c) drop-shadow(0 0 15px color-mix(in srgb, var(--ship-color) 70%, transparent));
+  transition: left .035s linear, top .035s linear;
+}
+
+.toast {
+  border-color: #72f5da55;
+  background: #0e1b29f2;
+  box-shadow: 0 0 24px #72f5da18, 0 12px 35px #0008;
+}
+
+.toast.failure {
+  border-color: #ff777f66;
+  background: #24141df2;
+}
+
+.toast.success {
+  border-color: #72f5da77;
+}
+
+@keyframes shipIdle {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -3px; }
+}
+
+@keyframes enginePulse {
+  from { opacity: .48; scale: .8 1; }
+  to { opacity: 1; scale: 1.12 1; }
+}
+
+@keyframes shipReturn {
+  0% { translate: 0 0; }
+  35% { translate: 0 -7px; }
+  100% { translate: 0 0; }
+}
+
+@keyframes shipLand {
+  0% { top: -38px; opacity: 0; transform: translateX(-50%) scale(.8); }
+  18% { opacity: 1; }
+  75% { top: 45px; opacity: 1; transform: translateX(-50%) scale(.8); }
+  100% { top: 67px; opacity: .16; transform: translateX(-50%) scale(.44); }
+}
+
+@keyframes portalBreathe {
+  from { opacity: .38; transform: scale(.8); }
+  to { opacity: .95; transform: scale(1.15); }
+}
+
+@keyframes lightBlink {
+  from { opacity: .35; }
+  to { opacity: 1; }
+}
+
+@media (min-width: 800px) {
+  .shipGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .shipCard { height: 174px; }
+  .shipViewport { height: 104px; }
+}
+
+@media (max-width: 560px) {
+  .gamePage { padding: 16px 12px 24px; }
+  .gameHeader { grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; }
+  .gameHeader > div { min-width: 0 !important; min-height: 54px; padding: 8px 9px; }
+  .gameHeader .scoreBox,
+  .gameHeader .timerBox { min-width: 76px !important; }
+  .gameHeader strong { font-size: 12px; }
+  .scoreBox strong,
+  .timerBox strong { font-size: 16px; }
+  .tinyLabel,
+  .scoreBox span,
+  .timerBox span { font-size: 8px; letter-spacing: .8px; }
+  .missionHint { font-size: 8px; letter-spacing: .4px; }
+  .spacePanel { padding: 13px 10px; }
+  .panelTitle { font-size: 8px; letter-spacing: .8px; }
+  .shipGrid { gap: 8px; }
+  .shipCard { height: 145px; padding: 9px 9px 8px; }
+  .shipCard .shipName { font-size: 7px; letter-spacing: .55px; }
+  .shipCard .reward { font-size: 11px; }
+  .shipViewport { height: 82px; }
+  .shipClass { font-size: 7px; letter-spacing: .5px; }
+  .shipCard .expiry { font-size: 9px; }
+  .dockBay { min-height: 205px; padding-inline: 9px; }
+  .bayStructure { min-height: 174px; }
+  .bayDeck { margin-top: 83px; }
+  .dockShipVisual { top: 46px; }
+  .dockText { font-size: 8px; letter-spacing: 1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shipCard,
+  .shipFlame,
+  .bayLights i,
+  .portalCore,
+  .dockShipVisual,
+  .shipCard.returning {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
